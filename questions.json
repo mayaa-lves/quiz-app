@@ -1,0 +1,77 @@
+[
+  {
+    "question": "Qual é a capital da Austrália?",
+    "options": ["Sydney", "Melbourne", "Camberra", "Brisbane"],
+    "correctAnswer": "Camberra"
+  },
+  {
+    "question": "Qual é o maior oceano do planeta Terra?",
+    "options": ["Oceano Atlântico", "Oceano Índico", "Oceano Pacífico", "Oceano Ártico"],
+    "correctAnswer": "Oceano Pacífico"
+  },
+  {
+    "question": "Quem pintou a obra 'Mona Lisa'?",
+    "options": ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Michelangelo"],
+    "correctAnswer": "Leonardo da Vinci"
+  },
+  {
+    "question": "Qual é o osso mais longo do corpo humano?",
+    "options": ["Fêmur", "Tíbia", "Rádio", "Úmero"],
+    "correctAnswer": "Fêmur"
+  },
+  {
+    "question": "Qual elemento químico é representado pelo símbolo 'Au'?",
+    "options": ["Prata", "Ouro", "Cobre", "Alumínio"],
+    "correctAnswer": "Ouro"
+  },
+  {
+    "question": "Qual é o menor país do mundo em área territorial?",
+    "options": ["Mônaco", "Nauru", "Vaticano", "San Marino"],
+    "correctAnswer": "Vaticano"
+  },
+  {
+    "question": "Em que ano ocorreu a queda do Muro de Berlim?",
+    "options": ["1987", "1989", "1991", "1993"],
+    "correctAnswer": "1989"
+  },
+  {
+    "question": "Qual gás é o mais abundante na atmosfera da Terra?",
+    "options": ["Oxigênio", "Dióxido de Carbono", "Nitrogênio", "Hidrogênio"],
+    "correctAnswer": "Nitrogênio"
+  },
+  {
+    "question": "Quem é o autor do clássico da literatura 'Dom Quixote'?",
+    "options": ["Machado de Assis", "Miguel de Cervantes", "William Shakespeare", "Luís de Camões"],
+    "correctAnswer": "Miguel de Cervantes"
+  },
+  {
+    "question": "Qual é o planeta mais próximo do Sol?",
+    "options": ["Vênus", "Marte", "Mercúrio", "Macaubas"],
+    "correctAnswer": "Mercúrio"
+  },
+  {
+    "question": "Quantos lados possui um heptágono?",
+    "options": ["5", "6", "7", "8"],
+    "correctAnswer": "7"
+  },
+  {
+    "question": "Qual é o rio mais extenso do mundo?",
+    "options": ["Rio Nilo", "Rio Amazonas", "Rio Mississippi", "Rio Yangtzé"],
+    "correctAnswer": "Rio Amazonas"
+  },
+  {
+    "question": "Em qual país teve origem a bebida café?",
+    "options": ["Brasil", "Colômbia", "Etiópia", "Itália"],
+    "correctAnswer": "Etiópia"
+  },
+  {
+    "question": "Qual é a velocidade aproximada da luz no vácuo?",
+    "options": ["150.000 km/s", "300.000 km/s", "450.000 km/s", "1.000.000 km/s"],
+    "correctAnswer": "300.000 km/s"
+  },
+  {
+    "question": "Qual país presenteou os Estados Unidos com a Estátua da Liberdade?",
+    "options": ["Reino Unido", "França", "Espanha", "Alemanha"],
+    "correctAnswer": "França"
+  }
+]
