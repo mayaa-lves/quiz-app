@@ -1,92 +1,227 @@
 // components/QuizScreen.tsx
 
-import { StyleSheet, Text, View, TouchableOpacity, Vibration } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Vibration } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { Accelerometer } from 'expo-sensors';
+import { Audio } from 'expo-av';
 
-// Definimos o formato de um objeto de pergunta para reutilizar o tipo
 type Question = {
   question: string;
   options: string[];
   correctAnswer: string;
 };
 
-// Definimos o formato exato das props que o componente espera
 type QuizScreenProps = {
   currentQuestion: Question;
+  currentQuestionIndex: number;
+  totalQuestions: number;
   selectedOption: string | null;
   isOptionsDisabled: boolean;
   onOptionPress: (option: string) => void;
   onNextQuestion: () => void;
 };
 
-// Paleta de cores alegres e vivas para trocar o fundo do card da pergunta
-const CARD_COLORS = [
-  '#FF7675', // Vermelho Coral
-  '#74B9FF', // Azul Claro
-  '#55E6C1', // Verde Menta
-  '#F0DF4A', // Amarelo Lindo
-  '#A29BFE', // Roxo Suave
-  '#FF9FF3', // Rosa Choque
-  '#FECA57', // Laranja Claro
-];
+const CARD_COLORS = ['#FF7043', '#FFB74D', '#4DB6AC', '#7986CB', '#BA68C8', '#FF8A65'];
 
-// Função simples para escolher uma cor baseada na pergunta
 const getCardBackgroundColor = (questionText: string) => {
   let hash = 0;
   for (let i = 0; i < questionText.length; i++) {
     hash = questionText.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const index = Math.abs(hash) % CARD_COLORS.length;
-  return CARD_COLORS[index];
+  return CARD_COLORS[Math.abs(hash) % CARD_COLORS.length];
 };
 
 export default function QuizScreen({
   currentQuestion,
+  currentQuestionIndex,
+  totalQuestions,
   selectedOption,
   isOptionsDisabled,
   onOptionPress,
   onNextQuestion,
 }: QuizScreenProps) {
 
-  // Função para lidar com o clique na opção e acionar a vibração se errar
-  const handlePress = (option: string) => {
-    // Se a opção selecionada for incorreta, faz o celular vibrar por 400 milissegundos
-    if (option !== currentQuestion.correctAnswer) {
-      Vibration.vibrate(400); 
+  const [timeLeft, setTimeLeft] = useState(15);
+  const [isVibrating, setIsVibrating] = useState(false);
+  
+  const vibrationIntervalRef = useRef<any>(null);
+  const timerRef = useRef<any>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
+
+  // Parar áudios em execução
+  const stopSound = async () => {
+    if (soundRef.current) {
+      try {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      } catch (e) {
+        // Ignora erros de limpeza
+      }
+      soundRef.current = null;
     }
+  };
+
+  // Tocador de Efeitos Sonoros com volume no máximo
+  const playSound = async (isCorrect: boolean) => {
+    await stopSound();
+    try {
+      // URL de alarme estridente/buzina estridente ao errar
+      const soundUri = isCorrect
+        ? 'https://actions.google.com/sounds/v1/cartoon/clown_horn.ogg'
+        : 'https://actions.google.com/sounds/v1/emergency/air_horn.ogg'; 
+
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: soundUri },
+        { shouldPlay: true, volume: 1.0 } // Volume no Máximo (1.0)
+      );
+
+      soundRef.current = sound;
+    } catch (e) {
+      // Falha ao carregar o som
+    }
+  };
+
+  const stopContinuousVibration = () => {
+    if (vibrationIntervalRef.current) {
+      clearInterval(vibrationIntervalRef.current);
+      vibrationIntervalRef.current = null;
+    }
+    Vibration.cancel();
+    stopSound(); // Para o som irritante assim que chacoalhar
+    setIsVibrating(false);
+  };
+
+  const startContinuousVibration = () => {
+    stopContinuousVibration();
+    setIsVibrating(true);
+    vibrationIntervalRef.current = setInterval(() => {
+      Vibration.vibrate(300);
+    }, 400);
+  };
+
+  // Temporizador por Pergunta (15 segundos)
+  useEffect(() => {
+    setTimeLeft(15);
+    setIsVibrating(false);
+    
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          if (!selectedOption) {
+            handlePress(''); // Tempo esgotado
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [currentQuestionIndex]);
+
+  // Sensor do Acelerômetro
+  useEffect(() => {
+    let subscription: any;
+    Accelerometer.setUpdateInterval(100);
+
+    subscription = Accelerometer.addListener((data) => {
+      const { x, y, z } = data;
+      const acceleration = Math.sqrt(x * x + y * y + z * z);
+
+      if (acceleration > 1.8) {
+        stopContinuousVibration();
+      }
+    });
+
+    return () => {
+      subscription && subscription.remove();
+      stopContinuousVibration();
+    };
+  }, []);
+
+  const handlePress = (option: string) => {
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    const isCorrect = option === currentQuestion.correctAnswer;
+
+    if (isCorrect) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      playSound(true);
+    } else {
+      playSound(false); // Dispara a buzina estridente
+      startContinuousVibration();
+    }
+
     onOptionPress(option);
   };
 
+  const handleNextWithCleanup = () => {
+    stopContinuousVibration();
+    onNextQuestion();
+  };
+
   const getOptionStyle = (option: string) => {
-    if (selectedOption) {
+    if (selectedOption !== null) {
       const isCorrect = option === currentQuestion.correctAnswer;
-      if (isCorrect) {
-        return styles.correctOption;
-      }
-      if (option === selectedOption && !isCorrect) {
-        return styles.incorrectOption;
-      }
+      if (isCorrect) return styles.correctOption;
+      if (option === selectedOption && !isCorrect) return styles.incorrectOption;
     }
     return {};
   };
 
   const getOptionTextStyle = (option: string) => {
-    if (selectedOption) {
-      if (option === currentQuestion.correctAnswer || option === selectedOption) {
-        return styles.selectedOptionText;
-      }
+    if (selectedOption !== null && (option === currentQuestion.correctAnswer || option === selectedOption)) {
+      return styles.selectedOptionText;
     }
     return {};
   };
 
-  // Cor dinâmica para o card da pergunta atual
   const dynamicCardColor = getCardBackgroundColor(currentQuestion.question);
+  const progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Cabeçalho */}
+      <View style={styles.header}>
+        <Text style={styles.logo}>QUIZ</Text>
+        <View style={styles.timerContainer}>
+          <Text style={styles.timerText}>⏱️ {timeLeft}s</Text>
+        </View>
+      </View>
+
+      {/* Barra de Progresso */}
+      <View style={styles.progressTrack}>
+        <View style={[styles.progressBar, { width: `${progressPercentage}%` }]} />
+      </View>
+      <Text style={styles.progressCounter}>
+        Pergunta {currentQuestionIndex + 1} de {totalQuestions}
+      </Text>
+
+      {/* Card da Pergunta */}
       <View style={[styles.questionContainer, { backgroundColor: dynamicCardColor }]}>
         <Text style={styles.questionText}>{currentQuestion.question}</Text>
       </View>
 
+      {/* Mensagem de Erro e Bloqueio */}
+      {selectedOption !== null && selectedOption !== currentQuestion.correctAnswer && (
+        <Text style={[styles.shakeHint, isVibrating && styles.shakeHintActive]}>
+          {isVibrating 
+            ? "🚨 CHACOALHE O CELULAR PARA PARAR O BARULHO!" 
+            : "✅ Desbloqueado! Você já pode avançar."}
+        </Text>
+      )}
+
+      {/* Opções */}
       <View style={styles.optionsContainer}>
         {currentQuestion.options.map((option) => (
           <TouchableOpacity
@@ -94,6 +229,7 @@ export default function QuizScreen({
             style={[styles.option, getOptionStyle(option)]}
             onPress={() => handlePress(option)}
             disabled={isOptionsDisabled}
+            activeOpacity={0.8}
           >
             <Text style={[styles.optionText, getOptionTextStyle(option)]}>
               {option}
@@ -102,100 +238,121 @@ export default function QuizScreen({
         ))}
       </View>
 
-      {selectedOption && (
-        <TouchableOpacity style={styles.nextButton} onPress={onNextQuestion}>
-          <Text style={styles.nextButtonText}>Próxima Pergunta</Text>
+      {/* Botão de Avançar */}
+      {selectedOption !== null && (
+        <TouchableOpacity 
+          style={[styles.nextButton, isVibrating && styles.disabledButton]} 
+          onPress={handleNextWithCleanup}
+          disabled={isVibrating}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.nextButtonText}>
+            {isVibrating ? 'CHACOALHE PARA LIBERAR' : 'PRÓXIMA PERGUNTA'}
+          </Text>
+          <Text style={styles.arrow}>{isVibrating ? '🔒' : '→'}</Text>
         </TouchableOpacity>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#F7F9FC', 
-    paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 24,
+  container: { flex: 1, backgroundColor: '#FFF8F3' },
+  scrollContent: {
+    paddingHorizontal: 25,
+    paddingTop: 20,
+    paddingBottom: 40,
+    flexGrow: 1,
     justifyContent: 'space-between',
   },
+  header: {
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  logo: { fontSize: 25, fontWeight: '900', color: '#FF7043', letterSpacing: 3 },
+  timerContainer: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    elevation: 2,
+  },
+  timerText: { fontSize: 13, fontWeight: '800', color: '#FF7043' },
+  progressTrack: {
+    height: 8,
+    backgroundColor: '#FFE3D5',
+    borderRadius: 4,
+    marginVertical: 8,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#FF7043',
+    borderRadius: 4,
+  },
+  progressCounter: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#777',
+    marginBottom: 15,
+  },
   questionContainer: { 
-    flex: 0.8, 
+    minHeight: 160,
     borderRadius: 24, 
-    padding: 24, 
+    padding: 22, 
     justifyContent: 'center', 
     alignItems: 'center',
-    marginBottom: 20,
-
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
+    marginBottom: 10,
+    elevation: 4,
   },
   questionText: { 
-    fontSize: 22, 
-    fontWeight: '800', 
+    fontSize: 20, 
+    fontWeight: '900', 
     textAlign: 'center',
     color: '#FFFFFF', 
-  
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    lineHeight: 26,
   },
-  optionsContainer: { 
-    flex: 1, 
-    justifyContent: 'center',
-    gap: 12,
+  shakeHint: {
+    textAlign: 'center',
+    color: '#4CAF50',
+    fontWeight: '800',
+    fontSize: 13,
+    marginBottom: 8,
   },
+  shakeHintActive: {
+    color: '#D32F2F',
+  },
+  optionsContainer: { gap: 10, marginBottom: 15 },
   option: { 
     backgroundColor: '#FFFFFF', 
-    paddingVertical: 18, 
+    paddingVertical: 15, 
     paddingHorizontal: 20, 
-    borderRadius: 16, 
+    borderRadius: 18, 
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
     borderWidth: 1.5,
-    borderColor: '#EFEFEF',
+    borderColor: '#FFE3D5',
   },
-  optionText: { 
-    fontSize: 16, 
-    fontWeight: '600',
-    color: '#2C3E50', 
-    textAlign: 'center',
-  },
-  selectedOptionText: {
-    color: '#FFFFFF', 
-  },
-  correctOption: { 
-    backgroundColor: '#2ECC71', 
-    borderColor: '#2ECC71',
-  },
-  incorrectOption: { 
-    backgroundColor: '#FF5252',
-    borderColor: '#FF5252',
-  },
+  optionText: { fontSize: 15, fontWeight: '700', color: '#444', textAlign: 'center' },
+  selectedOptionText: { color: '#FFFFFF', fontWeight: '900' },
+  correctOption: { backgroundColor: '#66BB6A', borderColor: '#66BB6A' },
+  incorrectOption: { backgroundColor: '#EF5350', borderColor: '#EF5350' },
   nextButton: { 
-    backgroundColor: '#FF6B4A',
-    paddingVertical: 18, 
-    borderRadius: 16, 
-    marginTop: 16, 
+    height: 60,
+    backgroundColor: '#FF7043',
+    borderRadius: 20, 
+    flexDirection: 'row',
     alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#FF6B4A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    justifyContent: 'center',
+    elevation: 5,
   },
-  nextButtonText: { 
-    color: '#FFFFFF', 
-    fontSize: 18, 
-    fontWeight: '700',
+  disabledButton: {
+    backgroundColor: '#BDBDBD',
+    elevation: 0,
   },
+  nextButtonText: { color: '#FFFFFF', fontSize: 15, fontWeight: '900', letterSpacing: 1 },
+  arrow: { color: '#FFFFFF', fontSize: 20, fontWeight: 'bold', marginLeft: 10 },
 });

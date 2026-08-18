@@ -1,9 +1,17 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 
-export default function PaginaInicial() {
+// Tipamos a prop para receber a função de início enviada pela HomePage (index.tsx)
+type PaginaInicialProps = {
+  onStartQuiz: () => void;
+};
+
+export default function PaginaInicial({ onStartQuiz }: PaginaInicialProps) {
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
 
       {/* Cabeçalho */}
       <View style={styles.header}>
@@ -45,12 +53,13 @@ export default function PaginaInicial() {
 
           <View style={styles.infoBox}>
             <Text style={styles.infoIcon}>❓</Text>
-            <Text style={styles.infoNumber}>10</Text>
+            <Text style={styles.infoNumber}>50</Text>
             <Text style={styles.infoText}>Perguntas</Text>
           </View>
 
           <View style={styles.infoBox}>
             <Text style={styles.infoIcon}>⭐</Text>
+
             <Text style={styles.infoNumber}>100</Text>
             <Text style={styles.infoText}>Pontos</Text>
           </View>
@@ -68,7 +77,7 @@ export default function PaginaInicial() {
         <TouchableOpacity
           style={styles.startButton}
           activeOpacity={0.8}
-          onPress={() => router.push('/')}
+          onPress={onStartQuiz}
         >
           <Text style={styles.startText}>
             INICIAR QUIZ
@@ -81,7 +90,7 @@ export default function PaginaInicial() {
 
       </View>
 
-    </View>
+    </ScrollView>
   );
 }
 
@@ -93,9 +102,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF8F3',
   },
 
+  scrollContent: {
+    paddingBottom: 40,
+    flexGrow: 1,
+  },
+
   header: {
     height: 80,
     paddingHorizontal: 25,
+    marginTop: 20,
 
     flexDirection: 'row',
     alignItems: 'center',
@@ -143,7 +158,7 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
 
-    marginTop: 20,
+    marginTop: 10,
     marginBottom: 25,
 
     borderRadius: 90,

@@ -4,13 +4,22 @@ import { useState } from "react";
 import { Stack } from "expo-router";
 import QuizScreen from "../components/QuizScreen";
 import ResultScreen from "../components/ResultScreen";
-import PaginaInicial from "../components/PaginaInicial"; // Importe seu novo componente aqui!
-import questions from "../questions.json";
+import PaginaInicial from "../components/PaginaInicialQuiz";
+import questionsData from "../questions.json";
+
+// Função para embaralhar um array (Algoritmo Fisher-Yates)
+const shuffleArray = (array: any[]) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
 export default function HomePage() {
-  // Novo estado para controlar se o quiz já foi iniciado ou não
   const [isQuizStarted, setIsQuizStarted] = useState(false);
-
+  const [questions, setQuestions] = useState(questionsData);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isOptionsDisabled, setIsOptionsDisabled] = useState(false);
@@ -19,9 +28,19 @@ export default function HomePage() {
 
   const currentQuestion = questions[currentQuestionIndex];
 
+  const handleStartQuiz = () => {
+    setQuestions(shuffleArray(questionsData)); // Embaralha ao iniciar
+    setCurrentQuestionIndex(0);
+    setScore(0);
+    setSelectedOption(null);
+    setIsOptionsDisabled(false);
+    setIsQuizFinished(false);
+    setIsQuizStarted(true);
+  };
+
   const handleOptionPress = (option: string) => {
     if (option === currentQuestion.correctAnswer) {
-      setScore(score + 1);
+      setScore((prev) => prev + 1);
     }
     setSelectedOption(option);
     setIsOptionsDisabled(true);
@@ -29,7 +48,7 @@ export default function HomePage() {
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
       setSelectedOption(null);
       setIsOptionsDisabled(false);
     } else {
@@ -37,37 +56,23 @@ export default function HomePage() {
     }
   };
 
-  const handlePlayAgain = () => {
-    setIsQuizFinished(false);
-    setCurrentQuestionIndex(0);
-    setSelectedOption(null);
-    setIsOptionsDisabled(false);
-    setScore(0);
-    setIsQuizStarted(true); // Reinicia já direto no quiz
-  };
-
-  // Função para dar início ao jogo ao clicar no botão da PaginaInicial
-  const handleStartQuiz = () => {
-    setIsQuizStarted(true);
-  };
-
   return (
     <>
-      {/* Remove o cabeçalho/barra superior em todas as telas */}
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Lógica de navegação entre as telas */}
       {!isQuizStarted ? (
         <PaginaInicial onStartQuiz={handleStartQuiz} />
       ) : isQuizFinished ? (
         <ResultScreen
           score={score}
           totalQuestions={questions.length}
-          onPlayAgain={handlePlayAgain}
+          onPlayAgain={handleStartQuiz}
         />
       ) : (
         <QuizScreen
           currentQuestion={currentQuestion}
+          currentQuestionIndex={currentQuestionIndex}
+          totalQuestions={questions.length}
           selectedOption={selectedOption}
           isOptionsDisabled={isOptionsDisabled}
           onOptionPress={handleOptionPress}
