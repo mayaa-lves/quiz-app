@@ -1,10 +1,17 @@
 // components/QuizScreen.tsx
 
-import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Vibration } from 'react-native';
-import * as Haptics from 'expo-haptics';
-import { Accelerometer } from 'expo-sensors';
-import { Audio } from 'expo-av';
+import { Audio } from "expo-av";
+import * as Haptics from "expo-haptics";
+import { Accelerometer } from "expo-sensors";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Vibration,
+  View,
+} from "react-native";
 
 type Question = {
   question: string;
@@ -22,7 +29,14 @@ type QuizScreenProps = {
   onNextQuestion: () => void;
 };
 
-const CARD_COLORS = ['#FF7043', '#FFB74D', '#4DB6AC', '#7986CB', '#BA68C8', '#FF8A65'];
+const CARD_COLORS = [
+  "#FF7043",
+  "#FFB74D",
+  "#4DB6AC",
+  "#7986CB",
+  "#BA68C8",
+  "#FF8A65",
+];
 
 const getCardBackgroundColor = (questionText: string) => {
   let hash = 0;
@@ -41,10 +55,9 @@ export default function QuizScreen({
   onOptionPress,
   onNextQuestion,
 }: QuizScreenProps) {
-
   const [timeLeft, setTimeLeft] = useState(15);
   const [isVibrating, setIsVibrating] = useState(false);
-  
+
   const vibrationIntervalRef = useRef<any>(null);
   const timerRef = useRef<any>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
@@ -64,21 +77,30 @@ export default function QuizScreen({
 
   // Tocador de Efeitos Sonoros com volume no máximo
   const playSound = async (isCorrect: boolean) => {
+    console.log("playSound foi chamado!");
+
     await stopSound();
+
     try {
-      // URL de alarme estridente/buzina estridente ao errar
-      const soundUri = isCorrect
-        ? 'https://actions.google.com/sounds/v1/cartoon/clown_horn.ogg'
-        : 'https://actions.google.com/sounds/v1/emergency/air_horn.ogg'; 
+      const soundUri = !isCorrect 
+        ? "https://actions.google.com/sounds/v1/alarms/phone_alerts_and_rings.ogg"
+        : "https://actions.google.com/sounds/v1/alarms/phone_alerts_and_rings.ogg";
+
+      console.log("Tentando tocar:", soundUri);
 
       const { sound } = await Audio.Sound.createAsync(
         { uri: soundUri },
-        { shouldPlay: true, volume: 1.0 } // Volume no Máximo (1.0)
+        {
+          shouldPlay: true,
+          volume: 1.0,
+        },
       );
 
       soundRef.current = sound;
+
+      console.log("Som carregado e reproduzido!");
     } catch (e) {
-      // Falha ao carregar o som
+      console.log("ERRO AO TOCAR SOM:", e);
     }
   };
 
@@ -104,7 +126,7 @@ export default function QuizScreen({
   useEffect(() => {
     setTimeLeft(15);
     setIsVibrating(false);
-    
+
     if (timerRef.current) clearInterval(timerRef.current);
 
     timerRef.current = setInterval(() => {
@@ -112,7 +134,7 @@ export default function QuizScreen({
         if (prev <= 1) {
           clearInterval(timerRef.current);
           if (!selectedOption) {
-            handlePress(''); // Tempo esgotado
+            handlePress(""); // Tempo esgotado
           }
           return 0;
         }
@@ -170,23 +192,28 @@ export default function QuizScreen({
     if (selectedOption !== null) {
       const isCorrect = option === currentQuestion.correctAnswer;
       if (isCorrect) return styles.correctOption;
-      if (option === selectedOption && !isCorrect) return styles.incorrectOption;
+      if (option === selectedOption && !isCorrect)
+        return styles.incorrectOption;
     }
     return {};
   };
 
   const getOptionTextStyle = (option: string) => {
-    if (selectedOption !== null && (option === currentQuestion.correctAnswer || option === selectedOption)) {
+    if (
+      selectedOption !== null &&
+      (option === currentQuestion.correctAnswer || option === selectedOption)
+    ) {
       return styles.selectedOptionText;
     }
     return {};
   };
 
   const dynamicCardColor = getCardBackgroundColor(currentQuestion.question);
-  const progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+  const progressPercentage =
+    ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
@@ -201,25 +228,35 @@ export default function QuizScreen({
 
       {/* Barra de Progresso */}
       <View style={styles.progressTrack}>
-        <View style={[styles.progressBar, { width: `${progressPercentage}%` }]} />
+        <View
+          style={[styles.progressBar, { width: `${progressPercentage}%` }]}
+        />
       </View>
       <Text style={styles.progressCounter}>
         Pergunta {currentQuestionIndex + 1} de {totalQuestions}
       </Text>
 
       {/* Card da Pergunta */}
-      <View style={[styles.questionContainer, { backgroundColor: dynamicCardColor }]}>
+      <View
+        style={[
+          styles.questionContainer,
+          { backgroundColor: dynamicCardColor },
+        ]}
+      >
         <Text style={styles.questionText}>{currentQuestion.question}</Text>
       </View>
 
       {/* Mensagem de Erro e Bloqueio */}
-      {selectedOption !== null && selectedOption !== currentQuestion.correctAnswer && (
-        <Text style={[styles.shakeHint, isVibrating && styles.shakeHintActive]}>
-          {isVibrating 
-            ? "🚨 CHACOALHE O CELULAR PARA PARAR O BARULHO!" 
-            : "✅ Desbloqueado! Você já pode avançar."}
-        </Text>
-      )}
+      {selectedOption !== null &&
+        selectedOption !== currentQuestion.correctAnswer && (
+          <Text
+            style={[styles.shakeHint, isVibrating && styles.shakeHintActive]}
+          >
+            {isVibrating
+              ? "🚨 CHACOALHE O CELULAR PARA PARAR O BARULHO!"
+              : "✅ Desbloqueado! Você já pode avançar."}
+          </Text>
+        )}
 
       {/* Opções */}
       <View style={styles.optionsContainer}>
@@ -240,16 +277,16 @@ export default function QuizScreen({
 
       {/* Botão de Avançar */}
       {selectedOption !== null && (
-        <TouchableOpacity 
-          style={[styles.nextButton, isVibrating && styles.disabledButton]} 
+        <TouchableOpacity
+          style={[styles.nextButton, isVibrating && styles.disabledButton]}
           onPress={handleNextWithCleanup}
           disabled={isVibrating}
           activeOpacity={0.8}
         >
           <Text style={styles.nextButtonText}>
-            {isVibrating ? 'CHACOALHE PARA LIBERAR' : 'PRÓXIMA PERGUNTA'}
+            {isVibrating ? "CHACOALHE PARA LIBERAR" : "PRÓXIMA PERGUNTA"}
           </Text>
-          <Text style={styles.arrow}>{isVibrating ? '🔒' : '→'}</Text>
+          <Text style={styles.arrow}>{isVibrating ? "🔒" : "→"}</Text>
         </TouchableOpacity>
       )}
     </ScrollView>
@@ -257,102 +294,112 @@ export default function QuizScreen({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF8F3' },
+  container: { flex: 1, backgroundColor: "#FFF8F3" },
   scrollContent: {
     paddingHorizontal: 25,
     paddingTop: 20,
     paddingBottom: 40,
     flexGrow: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   header: {
     height: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  logo: { fontSize: 25, fontWeight: '900', color: '#FF7043', letterSpacing: 3 },
+  logo: { fontSize: 25, fontWeight: "900", color: "#FF7043", letterSpacing: 3 },
   timerContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
     elevation: 2,
   },
-  timerText: { fontSize: 13, fontWeight: '800', color: '#FF7043' },
+  timerText: { fontSize: 13, fontWeight: "800", color: "#FF7043" },
   progressTrack: {
     height: 8,
-    backgroundColor: '#FFE3D5',
+    backgroundColor: "#FFE3D5",
     borderRadius: 4,
     marginVertical: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   progressBar: {
-    height: '100%',
-    backgroundColor: '#FF7043',
+    height: "100%",
+    backgroundColor: "#FF7043",
     borderRadius: 4,
   },
   progressCounter: {
     fontSize: 12,
-    fontWeight: '700',
-    color: '#777',
+    fontWeight: "700",
+    color: "#777",
     marginBottom: 15,
   },
-  questionContainer: { 
+  questionContainer: {
     minHeight: 160,
-    borderRadius: 24, 
-    padding: 22, 
-    justifyContent: 'center', 
-    alignItems: 'center',
+    borderRadius: 24,
+    padding: 22,
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 10,
     elevation: 4,
   },
-  questionText: { 
-    fontSize: 20, 
-    fontWeight: '900', 
-    textAlign: 'center',
-    color: '#FFFFFF', 
+  questionText: {
+    fontSize: 20,
+    fontWeight: "900",
+    textAlign: "center",
+    color: "#FFFFFF",
     lineHeight: 26,
   },
   shakeHint: {
-    textAlign: 'center',
-    color: '#4CAF50',
-    fontWeight: '800',
+    textAlign: "center",
+    color: "#4CAF50",
+    fontWeight: "800",
     fontSize: 13,
     marginBottom: 8,
   },
   shakeHintActive: {
-    color: '#D32F2F',
+    color: "#D32F2F",
   },
   optionsContainer: { gap: 10, marginBottom: 15 },
-  option: { 
-    backgroundColor: '#FFFFFF', 
-    paddingVertical: 15, 
-    paddingHorizontal: 20, 
-    borderRadius: 18, 
-    alignItems: 'center',
-    justifyContent: 'center',
+  option: {
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
     elevation: 2,
     borderWidth: 1.5,
-    borderColor: '#FFE3D5',
+    borderColor: "#FFE3D5",
   },
-  optionText: { fontSize: 15, fontWeight: '700', color: '#444', textAlign: 'center' },
-  selectedOptionText: { color: '#FFFFFF', fontWeight: '900' },
-  correctOption: { backgroundColor: '#66BB6A', borderColor: '#66BB6A' },
-  incorrectOption: { backgroundColor: '#EF5350', borderColor: '#EF5350' },
-  nextButton: { 
+  optionText: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#444",
+    textAlign: "center",
+  },
+  selectedOptionText: { color: "#FFFFFF", fontWeight: "900" },
+  correctOption: { backgroundColor: "#66BB6A", borderColor: "#66BB6A" },
+  incorrectOption: { backgroundColor: "#EF5350", borderColor: "#EF5350" },
+  nextButton: {
     height: 60,
-    backgroundColor: '#FF7043',
-    borderRadius: 20, 
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#FF7043",
+    borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     elevation: 5,
   },
   disabledButton: {
-    backgroundColor: '#BDBDBD',
+    backgroundColor: "#BDBDBD",
     elevation: 0,
   },
-  nextButtonText: { color: '#FFFFFF', fontSize: 15, fontWeight: '900', letterSpacing: 1 },
-  arrow: { color: '#FFFFFF', fontSize: 20, fontWeight: 'bold', marginLeft: 10 },
+  nextButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "900",
+    letterSpacing: 1,
+  },
+  arrow: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginLeft: 10 },
 });

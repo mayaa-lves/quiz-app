@@ -53,7 +53,7 @@ export default function PaginaInicial({ onStartQuiz }: PaginaInicialProps) {
 
           <View style={styles.infoBox}>
             <Text style={styles.infoIcon}>❓</Text>
-            <Text style={styles.infoNumber}>50</Text>
+            <Text style={styles.infoNumber}>30</Text>
             <Text style={styles.infoText}>Perguntas</Text>
           </View>
 
