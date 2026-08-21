@@ -1,77 +1,152 @@
 [
   {
-    "question": "Qual é a capital da Austrália?",
-    "options": ["Sydney", "Melbourne", "Camberra", "Brisbane"],
-    "correctAnswer": "Camberra"
+    "question": "Qual é a capital do Canadá?",
+    "options": ["Toronto", "Vancouver", "Ottawa", "Montreal"],
+    "correctAnswer": "Ottawa"
   },
   {
-    "question": "Qual é o maior oceano do planeta Terra?",
-    "options": ["Oceano Atlântico", "Oceano Índico", "Oceano Pacífico", "Oceano Ártico"],
-    "correctAnswer": "Oceano Pacífico"
+    "question": "Qual é o maior planeta do Sistema Solar?",
+    "options": ["Saturno", "Júpiter", "Netuno", "Urano"],
+    "correctAnswer": "Júpiter"
   },
   {
-    "question": "Quem pintou a obra 'Mona Lisa'?",
-    "options": ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Michelangelo"],
-    "correctAnswer": "Leonardo da Vinci"
+    "question": "Quem escreveu 'Romeu e Julieta'?",
+    "options": ["William Shakespeare", "Charles Dickens", "Victor Hugo", "Homero"],
+    "correctAnswer": "William Shakespeare"
   },
   {
-    "question": "Qual é o osso mais longo do corpo humano?",
-    "options": ["Fêmur", "Tíbia", "Rádio", "Úmero"],
-    "correctAnswer": "Fêmur"
+    "question": "Qual é o símbolo químico do ferro?",
+    "options": ["Fe", "Fi", "F", "Ir"],
+    "correctAnswer": "Fe"
   },
   {
-    "question": "Qual elemento químico é representado pelo símbolo 'Au'?",
-    "options": ["Prata", "Ouro", "Cobre", "Alumínio"],
-    "correctAnswer": "Ouro"
-  },
-  {
-    "question": "Qual é o menor país do mundo em área territorial?",
-    "options": ["Mônaco", "Nauru", "Vaticano", "San Marino"],
-    "correctAnswer": "Vaticano"
-  },
-  {
-    "question": "Em que ano ocorreu a queda do Muro de Berlim?",
-    "options": ["1987", "1989", "1991", "1993"],
-    "correctAnswer": "1989"
-  },
-  {
-    "question": "Qual gás é o mais abundante na atmosfera da Terra?",
-    "options": ["Oxigênio", "Dióxido de Carbono", "Nitrogênio", "Hidrogênio"],
-    "correctAnswer": "Nitrogênio"
-  },
-  {
-    "question": "Quem é o autor do clássico da literatura 'Dom Quixote'?",
-    "options": ["Machado de Assis", "Miguel de Cervantes", "William Shakespeare", "Luís de Camões"],
-    "correctAnswer": "Miguel de Cervantes"
-  },
-  {
-    "question": "Qual é o planeta mais próximo do Sol?",
-    "options": ["Vênus", "Marte", "Mercúrio", "Macaubas"],
-    "correctAnswer": "Mercúrio"
-  },
-  {
-    "question": "Quantos lados possui um heptágono?",
+    "question": "Quantos continentes existem tradicionalmente?",
     "options": ["5", "6", "7", "8"],
     "correctAnswer": "7"
   },
   {
-    "question": "Qual é o rio mais extenso do mundo?",
-    "options": ["Rio Nilo", "Rio Amazonas", "Rio Mississippi", "Rio Yangtzé"],
-    "correctAnswer": "Rio Amazonas"
+    "question": "Qual é a capital do Japão?",
+    "options": ["Osaka", "Kyoto", "Tóquio", "Hiroshima"],
+    "correctAnswer": "Tóquio"
   },
   {
-    "question": "Em qual país teve origem a bebida café?",
-    "options": ["Brasil", "Colômbia", "Etiópia", "Itália"],
-    "correctAnswer": "Etiópia"
+    "question": "Quem foi o primeiro homem a pisar na Lua?",
+    "options": ["Yuri Gagarin", "Neil Armstrong", "Buzz Aldrin", "Alan Shepard"],
+    "correctAnswer": "Neil Armstrong"
   },
   {
-    "question": "Qual é a velocidade aproximada da luz no vácuo?",
-    "options": ["150.000 km/s", "300.000 km/s", "450.000 km/s", "1.000.000 km/s"],
-    "correctAnswer": "300.000 km/s"
+    "question": "Qual é o maior órgão do corpo humano?",
+    "options": ["Fígado", "Coração", "Pulmão", "Pele"],
+    "correctAnswer": "Pele"
   },
   {
-    "question": "Qual país presenteou os Estados Unidos com a Estátua da Liberdade?",
-    "options": ["Reino Unido", "França", "Espanha", "Alemanha"],
-    "correctAnswer": "França"
+    "question": "Qual é a fórmula química da água?",
+    "options": ["CO2", "H2O", "O2", "NaCl"],
+    "correctAnswer": "H2O"
+  },
+  {
+    "question": "Qual país é conhecido como 'Terra do Sol Nascente'?",
+    "options": ["China", "Coreia do Sul", "Japão", "Tailândia"],
+    "correctAnswer": "Japão"
+  },
+  {
+    "question": "Em que ano o Brasil declarou sua independência?",
+    "options": ["1500", "1822", "1889", "1922"],
+    "correctAnswer": "1822"
+  },
+  {
+    "question": "Qual é a estrela mais próxima da Terra?",
+    "options": ["Sirius", "Betelgeuse", "Sol", "Vega"],
+    "correctAnswer": "Sol"
+  },
+  {
+    "question": "Qual é o maior mamífero do mundo?",
+    "options": ["Elefante-africano", "Baleia-azul", "Girafa", "Orca"],
+    "correctAnswer": "Baleia-azul"
+  },
+  {
+    "question": "Quantos minutos existem em uma hora?",
+    "options": ["30", "45", "60", "90"],
+    "correctAnswer": "60"
+  },
+  {
+    "question": "Qual é a capital da França?",
+    "options": ["Lyon", "Marselha", "Paris", "Nice"],
+    "correctAnswer": "Paris"
+  },
+  {
+    "question": "Qual instrumento é utilizado para medir a temperatura?",
+    "options": ["Barômetro", "Termômetro", "Higrômetro", "Anemômetro"],
+    "correctAnswer": "Termômetro"
+  },
+  {
+    "question": "Qual é o idioma mais falado no Brasil?",
+    "options": ["Espanhol", "Português", "Inglês", "Francês"],
+    "correctAnswer": "Português"
+  },
+  {
+    "question": "Quem descobriu a penicilina?",
+    "options": ["Alexander Fleming", "Louis Pasteur", "Isaac Newton", "Albert Einstein"],
+    "correctAnswer": "Alexander Fleming"
+  },
+  {
+    "question": "Qual é o resultado de 12 × 8?",
+    "options": ["86", "96", "108", "112"],
+    "correctAnswer": "96"
+  },
+  {
+    "question": "Qual é o maior deserto quente do mundo?",
+    "options": ["Deserto de Gobi", "Deserto do Atacama", "Deserto do Saara", "Deserto da Arábia"],
+    "correctAnswer": "Deserto do Saara"
+  },
+  {
+    "question": "Qual é o nome da galáxia onde está localizado o Sistema Solar?",
+    "options": ["Andrômeda", "Via Láctea", "Galáxia do Triângulo", "Sombrero"],
+    "correctAnswer": "Via Láctea"
+  },
+  {
+    "question": "Quem escreveu o livro 'O Pequeno Príncipe'?",
+    "options": ["Antoine de Saint-Exupéry", "Júlio Verne", "Monteiro Lobato", "J. K. Rowling"],
+    "correctAnswer": "Antoine de Saint-Exupéry"
+  },
+  {
+    "question": "Qual é o país com maior território do mundo?",
+    "options": ["Canadá", "China", "Estados Unidos", "Rússia"],
+    "correctAnswer": "Rússia"
+  },
+  {
+    "question": "Qual é o metal líquido em temperatura ambiente?",
+    "options": ["Ferro", "Mercúrio", "Alumínio", "Cobre"],
+    "correctAnswer": "Mercúrio"
+  },
+  {
+    "question": "Quantos graus possui um ângulo reto?",
+    "options": ["45°", "60°", "90°", "180°"],
+    "correctAnswer": "90°"
+  },
+  {
+    "question": "Qual é a capital da Itália?",
+    "options": ["Milão", "Veneza", "Florença", "Roma"],
+    "correctAnswer": "Roma"
+  },
+  {
+    "question": "Qual animal é conhecido como o 'rei da selva'?",
+    "options": ["Tigre", "Leão", "Onça-pintada", "Elefante"],
+    "correctAnswer": "Leão"
+  },
+  {
+    "question": "Qual é o processo pelo qual as plantas produzem seu próprio alimento?",
+    "options": ["Respiração", "Fotossíntese", "Digestão", "Fermentação"],
+    "correctAnswer": "Fotossíntese"
+  },
+  {
+    "question": "Qual é o oceano que banha a costa leste do Brasil?",
+    "options": ["Oceano Pacífico", "Oceano Índico", "Oceano Atlântico", "Oceano Ártico"],
+    "correctAnswer": "Oceano Atlântico"
+  },
+  {
+    "question": "Quem formulou a teoria da relatividade?",
+    "options": ["Isaac Newton", "Galileu Galilei", "Albert Einstein", "Stephen Hawking"],
+    "correctAnswer": "Albert Einstein"
   }
 ]
