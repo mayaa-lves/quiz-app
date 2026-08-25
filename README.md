@@ -8,6 +8,8 @@ O aplicativo apresenta perguntas com alternativas, controle de tempo, progresso 
 
 ## 📱 Sobre o Projeto
 
+![Preview do projeto](./assets/preview.png)
+
 O **Quiz** foi desenvolvido como um projeto de estudo para aplicar conceitos fundamentais do desenvolvimento mobile com **React Native**, incluindo:
 
 * Componentização
